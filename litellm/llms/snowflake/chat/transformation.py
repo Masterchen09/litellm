@@ -12,7 +12,7 @@ from litellm.types.utils import ChatCompletionMessageToolCall, Function, ModelRe
 
 from ...openai_like.chat.transformation import OpenAIGPTConfig
 
-from ..utils import SnowflakeBaseConfig
+from ..common_utils import SnowflakeBaseConfig
 
 
 if TYPE_CHECKING:
