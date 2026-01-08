@@ -2081,3 +2081,84 @@ def test_update_kwargs_with_deployment_no_tags():
 
     # No tags key should be added if deployment has no tags
     assert "tags" not in kwargs["metadata"]
+
+
+def test_init_redis_sentinel_kwargs():
+    """
+    Test that _init_redis_sentinel correctly passes kwargs to redis.Sentinel.
+    """
+    from litellm._redis import _init_redis_sentinel
+    from litellm.constants import REDIS_SOCKET_TIMEOUT
+
+    mock_sentinel_instance = MagicMock()
+    mock_sentinel_class = MagicMock(return_value=mock_sentinel_instance)
+    
+    redis_kwargs = {
+        "sentinel_nodes": [("localhost", 26379)],
+        "service_name": "mymaster",
+        "sentinel_password": "sentinel_pass",
+        "password": "redis_pass",
+        "ssl": True,
+        "ssl_cert_reqs": "required"
+    }
+    
+    with patch("redis.Sentinel", mock_sentinel_class):
+        _init_redis_sentinel(redis_kwargs)
+        
+        # Check Sentinel init
+        mock_sentinel_class.assert_called_once()
+        call_kwargs = mock_sentinel_class.call_args[1]
+        assert call_kwargs["sentinel_kwargs"] == {
+            "password": "sentinel_pass",
+            "ssl": True,
+            "ssl_cert_reqs": "required",
+            "socket_timeout": REDIS_SOCKET_TIMEOUT
+        }
+
+        assert call_kwargs["connection_kwargs"] == {
+            "password": "redis_pass",
+            "ssl": True,
+            "ssl_cert_reqs": "required",
+            "socket_timeout": REDIS_SOCKET_TIMEOUT
+        }
+
+
+@pytest.mark.asyncio
+async def test_init_async_redis_sentinel_kwargs():
+    """
+    Test that _init_async_redis_sentinel correctly passes kwargs to redis.Sentinel.
+    """
+    from litellm._redis import _init_async_redis_sentinel
+    from litellm.constants import REDIS_SOCKET_TIMEOUT
+
+    mock_sentinel_instance = MagicMock()
+    mock_sentinel_class = MagicMock(return_value=mock_sentinel_instance)
+    
+    redis_kwargs = {
+        "sentinel_nodes": [("localhost", 26379)],
+        "service_name": "mymaster",
+        "sentinel_password": "sentinel_pass",
+        "password": "redis_pass",
+        "ssl": True,
+        "ssl_cert_reqs": "required"
+    }
+    
+    with patch("redis.asyncio.Sentinel", mock_sentinel_class):
+        _init_async_redis_sentinel(redis_kwargs)
+        
+        # Check Sentinel init
+        mock_sentinel_class.assert_called_once()
+        call_kwargs = mock_sentinel_class.call_args[1]
+        assert call_kwargs["sentinel_kwargs"] == {
+            "password": "sentinel_pass",
+            "ssl": True,
+            "ssl_cert_reqs": "required",
+            "socket_timeout": REDIS_SOCKET_TIMEOUT
+        }
+        
+        assert call_kwargs["connection_kwargs"] == {
+            "password": "redis_pass",
+            "ssl": True,
+            "ssl_cert_reqs": "required",
+            "socket_timeout": REDIS_SOCKET_TIMEOUT
+        }

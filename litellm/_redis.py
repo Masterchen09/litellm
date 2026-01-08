@@ -312,6 +312,19 @@ def _init_redis_sentinel(redis_kwargs) -> redis.Redis:
     sentinel_password = redis_kwargs.get("sentinel_password")
     service_name = redis_kwargs.get("service_name")
 
+    connection_kwargs = {}
+    args = _get_redis_kwargs()
+    for arg in redis_kwargs:
+        if arg in args:
+            connection_kwargs[arg] = redis_kwargs[arg]
+
+    # Use connection_kwargs and override special kwargs for sentinel
+    sentinel_kwargs = dict(connection_kwargs)
+    sentinel_kwargs["password"] = sentinel_password
+
+    if 'socket_timeout' not in connection_kwargs or connection_kwargs['socket_timeout'] is None:
+        connection_kwargs['socket_timeout'] = REDIS_SOCKET_TIMEOUT
+
     if not sentinel_nodes or not service_name:
         raise ValueError(
             "Both 'sentinel_nodes' and 'service_name' are required for Redis Sentinel."
@@ -322,8 +335,8 @@ def _init_redis_sentinel(redis_kwargs) -> redis.Redis:
     # Set up the Sentinel client
     sentinel = redis.Sentinel(
         sentinel_nodes,
-        socket_timeout=REDIS_SOCKET_TIMEOUT,
-        password=sentinel_password,
+        sentinel_kwargs=sentinel_kwargs,
+        **connection_kwargs
     )
 
     # Return the master instance for the given service
@@ -336,6 +349,19 @@ def _init_async_redis_sentinel(redis_kwargs) -> async_redis.Redis:
     sentinel_password = redis_kwargs.get("sentinel_password")
     service_name = redis_kwargs.get("service_name")
 
+    connection_kwargs = {}
+    args = _get_redis_kwargs()
+    for arg in redis_kwargs:
+        if arg in args:
+            connection_kwargs[arg] = redis_kwargs[arg]
+
+    # Use connection_kwargs and override special kwargs for sentinel
+    sentinel_kwargs = dict(connection_kwargs)
+    sentinel_kwargs["password"] = sentinel_password
+
+    if 'socket_timeout' not in connection_kwargs or connection_kwargs['socket_timeout'] is None:
+        connection_kwargs['socket_timeout'] = REDIS_SOCKET_TIMEOUT
+
     if not sentinel_nodes or not service_name:
         raise ValueError(
             "Both 'sentinel_nodes' and 'service_name' are required for Redis Sentinel."
@@ -346,8 +372,8 @@ def _init_async_redis_sentinel(redis_kwargs) -> async_redis.Redis:
     # Set up the Sentinel client
     sentinel = async_redis.Sentinel(
         sentinel_nodes,
-        socket_timeout=REDIS_SOCKET_TIMEOUT,
-        password=sentinel_password,
+        sentinel_kwargs=sentinel_kwargs,
+        **connection_kwargs
     )
 
     # Return the master instance for the given service
@@ -559,4 +585,3 @@ def _pretty_print_redis_config(redis_kwargs: dict) -> None:
         verbose_logger.info(f"Redis configuration: {masked_redis_kwargs}")
     except Exception as e:
         verbose_logger.error(f"Error pretty printing Redis configuration: {e}")
-

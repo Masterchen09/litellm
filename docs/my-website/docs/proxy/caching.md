@@ -142,6 +142,7 @@ litellm_settings:
     service_name: "mymaster"
     sentinel_nodes: [["localhost", 26379]]
     sentinel_password: "password" # [OPTIONAL]
+    password: "password" # The password for the Redis master must be provided separately, as it can be different from the sentinel password.
 ```
 
 </TabItem>
@@ -156,6 +157,7 @@ You can configure redis sentinel in your .env by setting `REDIS_SENTINEL_NODES` 
 REDIS_SENTINEL_NODES='[["localhost", 26379]]'
 REDIS_SERVICE_NAME = "mymaster"
 REDIS_SENTINEL_PASSWORD = "password"
+REDIS_PASSWORD = "password"
 ```
 
 :::note
@@ -267,7 +269,7 @@ export GOOGLE_APPLICATION_CREDENTIALS="/path/to/service-account-key.json"
 
 </TabItem>
 
-</Tabs> 
+</Tabs>
 #### Step 2: Add Redis Credentials to .env
 Set either `REDIS_URL` or the `REDIS_HOST` in your os environment, to enable caching.
 
@@ -294,6 +296,7 @@ REDIS_<redis-kwarg-name> = ""
 ```
 
 For example:
+
 ```shell
 REDIS_SSL = "True"
 REDIS_SSL_CERT_REQS = "None" 
@@ -990,7 +993,7 @@ x-litellm-cache-key: 586bf3f3c1bf5aecb55bd9996494d3bbc69eb58397163add6d49537762a
 
 ```
 
-### **Set Caching Default Off - Opt in only **
+### **Set Caching Default Off - Opt in only**
 
 1. **Set `mode: default_off` for caching**
 
@@ -1055,7 +1058,6 @@ curl http://localhost:4000/v1/chat/completions \
 </TabItem>
 
 </Tabs>
-
 
 ## Redis max_connections
 
@@ -1133,7 +1135,8 @@ litellm_settings:
     type: "redis"
   enable_caching_on_provider_specific_optional_params: True  # Include provider-specific params in cache keys
 ```
-## Advanced - user api key cache ttl 
+
+## Advanced - user api key cache ttl
 
 Configure how long the in-memory cache stores the key object (prevents db requests)
 
