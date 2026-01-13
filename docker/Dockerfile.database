@@ -83,6 +83,8 @@ RUN sed -i 's/\r$//' docker/entrypoint.sh && chmod +x docker/entrypoint.sh
 RUN sed -i 's/\r$//' docker/prod_entrypoint.sh && chmod +x docker/prod_entrypoint.sh
 EXPOSE 4000/tcp
 
+COPY docker/logging_config.yaml /app/logging_config.yaml
+
 RUN apk add --no-cache supervisor
 COPY docker/supervisord.conf /etc/supervisord.conf
 

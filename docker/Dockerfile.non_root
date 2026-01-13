@@ -107,6 +107,7 @@ RUN for i in 1 2 3; do \
 
 # Copy artifacts from builder
 COPY --from=builder /app/requirements.txt /app/requirements.txt
+COPY --from=builder /app/docker/logging_config.yaml /app/logging_config.yaml
 COPY --from=builder /app/docker/entrypoint.sh /app/docker/prod_entrypoint.sh /app/docker/
 COPY --from=builder /app/docker/supervisord.conf /etc/supervisord.conf
 COPY --from=builder /app/schema.prisma /app/
