@@ -55,7 +55,7 @@ class BedrockStabilityImageEditConfig(BaseImageEditConfig):
     def _is_stability_edit_model(cls, model: Optional[str] = None) -> bool:
         """
         Returns True if the model is a Bedrock Stability edit model.
-        
+
         Bedrock Stability edit models follow this pattern:
             stability.stable-conservative-upscale-v1:0
             stability.stable-creative-upscale-v1:0
@@ -67,25 +67,25 @@ class BedrockStabilityImageEditConfig(BaseImageEditConfig):
         """
         if model:
             model_lower = model.lower()
-            if "stability." in model_lower and any([
-                "upscale" in model_lower,
-                "outpaint" in model_lower,
-                "inpaint" in model_lower,
-                "erase" in model_lower,
-                "remove-background" in model_lower,
-                "search-recolor" in model_lower,
-                "search-replace" in model_lower,
-                "control-sketch" in model_lower,
-                "control-structure" in model_lower,
-                "style-guide" in model_lower,
-                "style-transfer" in model_lower,
-            ]):
+            if "stability." in model_lower and any(
+                [
+                    "upscale" in model_lower,
+                    "outpaint" in model_lower,
+                    "inpaint" in model_lower,
+                    "erase" in model_lower,
+                    "remove-background" in model_lower,
+                    "search-recolor" in model_lower,
+                    "search-replace" in model_lower,
+                    "control-sketch" in model_lower,
+                    "control-structure" in model_lower,
+                    "style-guide" in model_lower,
+                    "style-transfer" in model_lower,
+                ]
+            ):
                 return True
         return False
 
-    def get_supported_openai_params(
-        self, model: str
-    ) -> list:
+    def get_supported_openai_params(self, model: str) -> list:
         """
         Return list of OpenAI params supported by Bedrock Stability.
         """
@@ -169,22 +169,22 @@ class BedrockStabilityImageEditConfig(BaseImageEditConfig):
             "prompt": prompt,
             "output_format": "png",  # Default to PNG
         }
-        
+
         # Convert image to base64
         image_b64: str
-        if hasattr(image, 'read') and callable(getattr(image, 'read', None)):
+        if hasattr(image, "read") and callable(getattr(image, "read", None)):
             # File-like object (e.g., BufferedReader from open())
             image_bytes = image.read()  # type: ignore
-            image_b64 = base64.b64encode(image_bytes).decode('utf-8')  # type: ignore
+            image_b64 = base64.b64encode(image_bytes).decode("utf-8")  # type: ignore
         elif isinstance(image, bytes):
             # Raw bytes
-            image_b64 = base64.b64encode(image).decode('utf-8')
+            image_b64 = base64.b64encode(image).decode("utf-8")
         elif isinstance(image, str):
             # Already a base64 string
             image_b64 = image
         else:
             # Try to handle as bytes
-            image_b64 = base64.b64encode(bytes(image)).decode('utf-8')  # type: ignore
+            image_b64 = base64.b64encode(bytes(image)).decode("utf-8")  # type: ignore
 
         data["image"] = image_b64
 
@@ -200,8 +200,10 @@ class BedrockStabilityImageEditConfig(BaseImageEditConfig):
                 file_value = value
                 if isinstance(value, list) and len(value) > 0:
                     file_value = value[0]
-                
-                if hasattr(file_value, 'read') and callable(getattr(file_value, 'read', None)):
+
+                if hasattr(file_value, "read") and callable(
+                    getattr(file_value, "read", None)
+                ):
                     file_bytes = file_value.read()  # type: ignore
                 elif isinstance(file_value, bytes):
                     file_bytes = file_value
@@ -211,9 +213,9 @@ class BedrockStabilityImageEditConfig(BaseImageEditConfig):
                     continue
                 else:
                     file_bytes = file_value  # type: ignore
-                
+
                 if isinstance(file_bytes, bytes):
-                    file_b64 = base64.b64encode(file_bytes).decode('utf-8')
+                    file_b64 = base64.b64encode(file_bytes).decode("utf-8")
                 else:
                     file_b64 = str(file_bytes)
                 data[key] = file_b64
@@ -310,13 +312,15 @@ class BedrockStabilityImageEditConfig(BaseImageEditConfig):
             model_response._hidden_params = {}
         if "additional_headers" not in model_response._hidden_params:
             model_response._hidden_params["additional_headers"] = {}
-        
+
         # Set cost based on model
         model_info = get_model_info(model, custom_llm_provider="bedrock")
         cost_per_image = model_info.get("output_cost_per_image", 0)
         if cost_per_image is not None:
-            model_response._hidden_params["additional_headers"]["llm_provider-x-litellm-response-cost"] = float(cost_per_image)
-        
+            model_response._hidden_params["additional_headers"][
+                "llm_provider-x-litellm-response-cost"
+            ] = float(cost_per_image)
+
         return model_response
 
     def use_multipart_form_data(self) -> bool:
@@ -333,11 +337,11 @@ class BedrockStabilityImageEditConfig(BaseImageEditConfig):
     ) -> str:
         """
         Get the complete URL for the Bedrock Image Edit API.
-        
+
         For Bedrock, this is handled by the handler which constructs the endpoint URL
         based on the model ID and AWS region. This method is required by the base class
         but the actual URL construction happens in BedrockImageEdit.image_edit().
-        
+
         Returns a placeholder - the real endpoint is constructed in the handler.
         """
         # Bedrock URLs are constructed in the handler using boto3
@@ -352,26 +356,25 @@ class BedrockStabilityImageEditConfig(BaseImageEditConfig):
     ) -> dict:
         """
         Validate environment for Bedrock Stability image edit.
-        
+
         For Bedrock, AWS credentials are managed by the BaseAWSLLM class.
         This method validates that headers are properly set up.
-        
+
         Args:
             headers: The request headers to validate/update
             model: The model name being used
             api_key: Optional API key (not used for Bedrock, which uses AWS credentials)
-        
+
         Returns:
             Updated headers dict
         """
         if headers is None:
             headers = {}
-        
+
         # Bedrock uses AWS credentials, not API keys
         # Headers are set up by the handler's get_request_headers() method
         # This just ensures basic headers are present
         if "Content-Type" not in headers:
             headers["Content-Type"] = "application/json"
-        
-        return headers
 
+        return headers

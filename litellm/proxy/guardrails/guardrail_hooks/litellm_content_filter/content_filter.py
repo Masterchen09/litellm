@@ -144,9 +144,9 @@ class ContentFilterGuardrail(CustomGuardrail):
         self.image_model = image_model
         # Store loaded categories
         self.loaded_categories: Dict[str, CategoryConfig] = {}
-        self.category_keywords: Dict[str, Tuple[str, str, ContentFilterAction]] = (
-            {}
-        )  # keyword -> (category, severity, action)
+        self.category_keywords: Dict[
+            str, Tuple[str, str, ContentFilterAction]
+        ] = {}  # keyword -> (category, severity, action)
 
         # Load categories if provided
         if categories:
@@ -739,11 +739,15 @@ class ContentFilterGuardrail(CustomGuardrail):
                 elif isinstance(e.detail, str):
                     e.detail = e.detail + " (Image description): " + description
                 else:
-                    e.detail = "Content blocked: Image description detected" + description
+                    e.detail = (
+                        "Content blocked: Image description detected" + description
+                    )
                 raise e
 
     def _count_masked_entities(
-        self, detections: List[ContentFilterDetection], masked_entity_count: Dict[str, int]
+        self,
+        detections: List[ContentFilterDetection],
+        masked_entity_count: Dict[str, int],
     ) -> None:
         """
         Count masked entities by type from detections.
@@ -798,9 +802,11 @@ class ContentFilterGuardrail(CustomGuardrail):
             dict(detection) for detection in detections
         ]
         if status != "success":
-            guardrail_json_response = exception_str if exception_str else [
-                dict(detection) for detection in detections
-            ]
+            guardrail_json_response = (
+                exception_str
+                if exception_str
+                else [dict(detection) for detection in detections]
+            )
 
         self.add_standard_logging_guardrail_information_to_request_data(
             guardrail_provider=self.guardrail_provider,
@@ -924,19 +930,28 @@ class ContentFilterGuardrail(CustomGuardrail):
                         if pattern_match:
                             matched_text, pattern_name, action = pattern_match
                             if action == ContentFilterAction.BLOCK:
-                                error_msg = f"Content blocked: {pattern_name} pattern detected"
+                                error_msg = (
+                                    f"Content blocked: {pattern_name} pattern detected"
+                                )
                                 verbose_proxy_logger.warning(error_msg)
                                 raise HTTPException(
                                     status_code=403,
-                                    detail={"error": error_msg, "pattern": pattern_name},
+                                    detail={
+                                        "error": error_msg,
+                                        "pattern": pattern_name,
+                                    },
                                 )
 
                         # Check blocked words
-                        blocked_word_match = self._check_blocked_words(accumulated_content)
+                        blocked_word_match = self._check_blocked_words(
+                            accumulated_content
+                        )
                         if blocked_word_match:
                             keyword, action, description = blocked_word_match
                             if action == ContentFilterAction.BLOCK:
-                                error_msg = f"Content blocked: keyword '{keyword}' detected"
+                                error_msg = (
+                                    f"Content blocked: keyword '{keyword}' detected"
+                                )
                                 if description:
                                     error_msg += f" ({description})"
                                 verbose_proxy_logger.warning(error_msg)

@@ -164,4 +164,3 @@ class AzureFoundryFlux2ImageEditConfig(OpenAIImageEditConfig):
             model=model,
             api_version=api_version,
         )
-

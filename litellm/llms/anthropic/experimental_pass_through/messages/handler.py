@@ -132,7 +132,7 @@ def anthropic_messages_handler(
 ]:
     """
     Makes Anthropic `/v1/messages` API calls In the Anthropic API Spec
-    
+
     Args:
         container: Container config with skills for code execution
     """
@@ -164,7 +164,6 @@ def anthropic_messages_handler(
     )
 
     if litellm_params.mock_response and isinstance(litellm_params.mock_response, str):
-
         return mock_response(
             model=model,
             messages=messages,

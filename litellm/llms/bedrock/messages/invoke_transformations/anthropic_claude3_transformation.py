@@ -108,13 +108,11 @@ class AmazonAnthropicClaudeMessagesConfig(
             stream=stream,
         )
 
-    def _remove_ttl_from_cache_control(
-        self, anthropic_messages_request: Dict
-    ) -> None:
+    def _remove_ttl_from_cache_control(self, anthropic_messages_request: Dict) -> None:
         """
         Remove `ttl` field from cache_control in messages.
         Bedrock doesn't support the ttl field in cache_control.
-        
+
         Args:
             anthropic_messages_request: The request dictionary to modify in-place
         """
@@ -126,7 +124,10 @@ class AmazonAnthropicClaudeMessagesConfig(
                         for item in content:
                             if isinstance(item, dict) and "cache_control" in item:
                                 cache_control = item["cache_control"]
-                                if isinstance(cache_control, dict) and "ttl" in cache_control:
+                                if (
+                                    isinstance(cache_control, dict)
+                                    and "ttl" in cache_control
+                                ):
                                     cache_control.pop("ttl", None)
 
     def transform_anthropic_messages_request(
@@ -151,9 +152,9 @@ class AmazonAnthropicClaudeMessagesConfig(
 
         # 1. anthropic_version is required for all claude models
         if "anthropic_version" not in anthropic_messages_request:
-            anthropic_messages_request["anthropic_version"] = (
-                self.DEFAULT_BEDROCK_ANTHROPIC_API_VERSION
-            )
+            anthropic_messages_request[
+                "anthropic_version"
+            ] = self.DEFAULT_BEDROCK_ANTHROPIC_API_VERSION
 
         # 2. `stream` is not allowed in request body for bedrock invoke
         if "stream" in anthropic_messages_request:
@@ -165,14 +166,14 @@ class AmazonAnthropicClaudeMessagesConfig(
 
         # 4. Remove `ttl` field from cache_control in messages (Bedrock doesn't support it)
         self._remove_ttl_from_cache_control(anthropic_messages_request)
-            
+
         # 5. AUTO-INJECT beta headers based on features used
         anthropic_model_info = AnthropicModelInfo()
         tools = anthropic_messages_optional_request_params.get("tools")
         messages_typed = cast(List[AllMessageValues], messages)
         tool_search_used = anthropic_model_info.is_tool_search_used(tools)
-        programmatic_tool_calling_used = anthropic_model_info.is_programmatic_tool_calling_used(
-            tools
+        programmatic_tool_calling_used = (
+            anthropic_model_info.is_programmatic_tool_calling_used(tools)
         )
         input_examples_used = anthropic_model_info.is_input_examples_used(tools)
 
@@ -189,9 +190,8 @@ class AmazonAnthropicClaudeMessagesConfig(
         )
         beta_set.update(auto_betas)
 
-        if (
-            tool_search_used
-            and not (programmatic_tool_calling_used or input_examples_used)
+        if tool_search_used and not (
+            programmatic_tool_calling_used or input_examples_used
         ):
             beta_set.discard(ANTHROPIC_TOOL_SEARCH_BETA_HEADER)
             if "opus-4" in model.lower() or "opus_4" in model.lower():
@@ -199,8 +199,7 @@ class AmazonAnthropicClaudeMessagesConfig(
 
         if beta_set:
             anthropic_messages_request["anthropic_beta"] = list(beta_set)
-        
-            
+
         return anthropic_messages_request
 
     def get_async_streaming_response_iterator(
@@ -218,7 +217,7 @@ class AmazonAnthropicClaudeMessagesConfig(
         )
         # Convert decoded Bedrock events to Server-Sent Events expected by Anthropic clients.
         return self.bedrock_sse_wrapper(
-            completion_stream=completion_stream, 
+            completion_stream=completion_stream,
             litellm_logging_obj=litellm_logging_obj,
             request_body=request_body,
         )
@@ -237,14 +236,14 @@ class AmazonAnthropicClaudeMessagesConfig(
         from litellm.llms.anthropic.experimental_pass_through.messages.streaming_iterator import (
             BaseAnthropicMessagesStreamingIterator,
         )
+
         handler = BaseAnthropicMessagesStreamingIterator(
             litellm_logging_obj=litellm_logging_obj,
             request_body=request_body,
         )
-        
+
         async for chunk in handler.async_sse_wrapper(completion_stream):
             yield chunk
-        
 
 
 class AmazonAnthropicClaudeMessagesStreamDecoder(AWSEventStreamDecoder):

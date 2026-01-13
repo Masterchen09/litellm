@@ -2106,7 +2106,9 @@ class LiteLLM_VerificationToken(LiteLLMPydanticObjectBase):
     rotation_interval: Optional[str] = None  # How often to rotate (e.g., "30d", "90d")
     last_rotation_at: Optional[datetime] = None  # When this key was last rotated
     key_rotation_at: Optional[datetime] = None  # When this key should next be rotated
-    router_settings: Optional[Dict] = None  # Router settings for this key (Key > Team > Global precedence)
+    router_settings: Optional[
+        Dict
+    ] = None  # Router settings for this key (Key > Team > Global precedence)
 
     model_config = ConfigDict(protected_namespaces=())
 
@@ -3868,20 +3870,44 @@ class CostEstimateResponse(LiteLLMPydanticObjectBase):
     num_requests_per_day: Optional[int] = None
     num_requests_per_month: Optional[int] = None
     # Per-request costs
-    cost_per_request: float = Field(description="Total cost per request (includes margin)")
-    input_cost_per_request: float = Field(description="Input token cost per request (before margin)")
-    output_cost_per_request: float = Field(description="Output token cost per request (before margin)")
-    margin_cost_per_request: float = Field(default=0.0, description="Margin/fee added per request")
+    cost_per_request: float = Field(
+        description="Total cost per request (includes margin)"
+    )
+    input_cost_per_request: float = Field(
+        description="Input token cost per request (before margin)"
+    )
+    output_cost_per_request: float = Field(
+        description="Output token cost per request (before margin)"
+    )
+    margin_cost_per_request: float = Field(
+        default=0.0, description="Margin/fee added per request"
+    )
     # Daily costs (if num_requests_per_day provided)
-    daily_cost: Optional[float] = Field(default=None, description="Total daily cost (includes margin)")
-    daily_input_cost: Optional[float] = Field(default=None, description="Daily input token cost")
-    daily_output_cost: Optional[float] = Field(default=None, description="Daily output token cost")
-    daily_margin_cost: Optional[float] = Field(default=None, description="Daily margin/fee")
+    daily_cost: Optional[float] = Field(
+        default=None, description="Total daily cost (includes margin)"
+    )
+    daily_input_cost: Optional[float] = Field(
+        default=None, description="Daily input token cost"
+    )
+    daily_output_cost: Optional[float] = Field(
+        default=None, description="Daily output token cost"
+    )
+    daily_margin_cost: Optional[float] = Field(
+        default=None, description="Daily margin/fee"
+    )
     # Monthly costs (if num_requests_per_month provided)
-    monthly_cost: Optional[float] = Field(default=None, description="Total monthly cost (includes margin)")
-    monthly_input_cost: Optional[float] = Field(default=None, description="Monthly input token cost")
-    monthly_output_cost: Optional[float] = Field(default=None, description="Monthly output token cost")
-    monthly_margin_cost: Optional[float] = Field(default=None, description="Monthly margin/fee")
+    monthly_cost: Optional[float] = Field(
+        default=None, description="Total monthly cost (includes margin)"
+    )
+    monthly_input_cost: Optional[float] = Field(
+        default=None, description="Monthly input token cost"
+    )
+    monthly_output_cost: Optional[float] = Field(
+        default=None, description="Monthly output token cost"
+    )
+    monthly_margin_cost: Optional[float] = Field(
+        default=None, description="Monthly margin/fee"
+    )
     # Pricing info
     input_cost_per_token: Optional[float] = None
     output_cost_per_token: Optional[float] = None

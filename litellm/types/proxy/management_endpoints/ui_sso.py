@@ -28,6 +28,7 @@ class LiteLLM_UpperboundKeyGenerateParams(LiteLLMPydanticObjectBase):
     tpm_limit: Optional[int] = None
     rpm_limit: Optional[int] = None
 
+
 class MicrosoftGraphAPIUserGroupDirectoryObject(TypedDict, total=False):
     """Model for Microsoft Graph API directory object"""
 
@@ -65,7 +66,7 @@ class AccessControl_UI_AccessMode(LiteLLMPydanticObjectBase):
 class RoleMappings(LiteLLMPydanticObjectBase):
     """
     Configuration for mapping SSO groups to LiteLLM roles.
-    
+
     The system will look at the group_claim field in the SSO token to determine
     which role to assign the user based on the roles mapping.
     """
@@ -78,11 +79,11 @@ class RoleMappings(LiteLLMPydanticObjectBase):
     )
     default_role: Optional[LitellmUserRoles] = Field(
         default=None,
-        description="Default role to assign if user's groups don't match any role mappings. Must be a valid LitellmUserRoles value (e.g., 'proxy_admin', 'internal_user', 'proxy_admin_viewer')"
+        description="Default role to assign if user's groups don't match any role mappings. Must be a valid LitellmUserRoles value (e.g., 'proxy_admin', 'internal_user', 'proxy_admin_viewer')",
     )
     roles: Dict[LitellmUserRoles, List[str]] = Field(
         default_factory=dict,
-        description="Mapping of LiteLLM role names to arrays of SSO group names. Example: {'proxy_admin': ['group-1', 'group-2'], 'proxy_admin_viewer': ['group-3']}"
+        description="Mapping of LiteLLM role names to arrays of SSO group names. Example: {'proxy_admin': ['group-1', 'group-2'], 'proxy_admin_viewer': ['group-3']}",
     )
 
 

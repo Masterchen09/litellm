@@ -113,12 +113,10 @@ class BaseResponsesAPIStreamingIterator:
                 # if "response" in parsed_chunk, then encode litellm specific information like custom_llm_provider
                 response_object = getattr(openai_responses_api_chunk, "response", None)
                 if response_object:
-                    response = (
-                        ResponsesAPIRequestUtils._update_responses_api_response_id_with_model_id(
-                            responses_api_response=response_object,
-                            litellm_metadata=self.litellm_metadata,
-                            custom_llm_provider=self.custom_llm_provider,
-                        )
+                    response = ResponsesAPIRequestUtils._update_responses_api_response_id_with_model_id(
+                        responses_api_response=response_object,
+                        litellm_metadata=self.litellm_metadata,
+                        custom_llm_provider=self.custom_llm_provider,
                     )
                     setattr(openai_responses_api_chunk, "response", response)
 
@@ -149,10 +147,10 @@ class BaseResponsesAPIStreamingIterator:
                             )
                             if usage_obj is not None:
                                 try:
-                                    cost: Optional[float] = (
-                                        self.logging_obj._response_cost_calculator(
-                                            result=response_obj
-                                        )
+                                    cost: Optional[
+                                        float
+                                    ] = self.logging_obj._response_cost_calculator(
+                                        result=response_obj
                                     )
                                     if cost is not None:
                                         setattr(usage_obj, "cost", cost)
@@ -191,7 +189,9 @@ class BaseResponsesAPIStreamingIterator:
                     typed_call_type = None
             if typed_call_type is None:
                 try:
-                    typed_call_type = CallTypes(getattr(self.logging_obj, "call_type", None))
+                    typed_call_type = CallTypes(
+                        getattr(self.logging_obj, "call_type", None)
+                    )
                 except Exception:
                     typed_call_type = None
 
@@ -387,6 +387,7 @@ class ResponsesAPIStreamingIterator(BaseResponsesAPIStreamingIterator):
         # The logging handlers may transform usage from Responses API format (input_tokens/output_tokens)
         # to chat completion format (prompt_tokens/completion_tokens) for internal logging
         import copy
+
         logging_response = copy.deepcopy(self.completed_response)
 
         asyncio.create_task(
@@ -473,6 +474,7 @@ class SyncResponsesAPIStreamingIterator(BaseResponsesAPIStreamingIterator):
         # The logging handlers may transform usage from Responses API format (input_tokens/output_tokens)
         # to chat completion format (prompt_tokens/completion_tokens) for internal logging
         import copy
+
         logging_response = copy.deepcopy(self.completed_response)
 
         run_async_function(
@@ -549,9 +551,7 @@ class MockResponsesAPIStreamingIterator(BaseResponsesAPIStreamingIterator):
 
         # Add cost to usage object if include_cost_in_streaming_usage is True
         if litellm.include_cost_in_streaming_usage and logging_obj is not None:
-            usage_obj: Optional[ResponseAPIUsage] = getattr(
-                transformed, "usage", None
-            )
+            usage_obj: Optional[ResponseAPIUsage] = getattr(transformed, "usage", None)
             if usage_obj is not None:
                 try:
                     cost: Optional[float] = logging_obj._response_cost_calculator(

@@ -77,8 +77,7 @@ async def expire_previous_ui_session_tokens(
 
         if tokens_to_block:
             await prisma_client.db.litellm_verificationtoken.update_many(
-                where={"token": {"in": tokens_to_block}},
-                data={"blocked": True}
+                where={"token": {"in": tokens_to_block}}, data={"blocked": True}
             )
 
     except Exception:
@@ -402,4 +401,3 @@ def create_ui_token_object(
         disabled_non_admin_personal_key_creation=disabled_non_admin_personal_key_creation,
         server_root_path=get_server_root_path(),
     )
-
