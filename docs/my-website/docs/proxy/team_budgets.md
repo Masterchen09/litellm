@@ -4,12 +4,9 @@ import TabItem from '@theme/TabItem';
 
 # Setting Team Budgets
 
-
 # Pre-Requisites
 
 - You must set up a Postgres database (e.g. Supabase, Neon, etc.)
-- To enable team member rate limits, set the environment variable `EXPERIMENTAL_MULTI_INSTANCE_RATE_LIMITING=true` **before starting the proxy server**. Without this, team member rate limits will not be enforced.
-
 
 ## Default Budget for Auto-Generated JWT Teams
 
@@ -18,6 +15,7 @@ When using JWT authentication with `team_id_upsert: true`, you can automatically
 This is configured in `default_team_settings` in your `config.yaml`.
 
 **Example:**
+
 ```yaml
 # in your config.yaml
 
@@ -31,12 +29,13 @@ litellm_settings:
     - team_id: "default-settings"
       max_budget: 100.0
 ```
-Track spend, set budgets for your Internal Team
 
+Track spend, set budgets for your Internal Team
 
 ## Setting Monthly Team Budgets
 
-### 1. Create a team 
+### 1. Create a team
+
 - Set `max_budget=000000001` ($ value the team is allowed to spend)
 - Set `budget_duration="1d"` (How frequently the budget should update)
 
@@ -45,6 +44,7 @@ Track spend, set budgets for your Internal Team
 <TabItem value="API" label="API">
 
 Create a new team and set `max_budget` and `budget_duration`
+
 ```shell
 curl -X POST 'http://0.0.0.0:4000/team/new' \
      -H 'Authorization: Bearer sk-1234' \
@@ -57,6 +57,7 @@ curl -X POST 'http://0.0.0.0:4000/team/new' \
 ```
 
 Response
+
 ```shell
 {
  "team_alias": "QA Prod Bot",
@@ -66,13 +67,13 @@ Response
  "budget_reset_at": "2024-06-14T22:48:36.594000Z"
 }  
 ```
+
 </TabItem>
 
 <TabItem value="UI" label="Admin UI">
 <Image img={require('../../img/create_team_gif_good.gif')} />
 
 </TabItem>
-
 
 </Tabs>
 
@@ -86,10 +87,9 @@ Possible values for `budget_duration`
 | `budget_duration="1d"` | every 1 day |
 | `budget_duration="30d"` | every 1 month |
 
-
 ### 2. Create a key for the `team`
 
-Create a key for Team=`QA Prod Bot` and `team_id="de35b29e-6ca8-4f47-b804-2b79d07aa99a"` from Step 1 
+Create a key for Team=`QA Prod Bot` and `team_id="de35b29e-6ca8-4f47-b804-2b79d07aa99a"` from Step 1
 
 <Tabs>
 
@@ -109,6 +109,7 @@ Response
 ```shell
 {"team_id":"de35b29e-6ca8-4f47-b804-2b79d07aa99a", "key":"sk-5qtncoYjzRcxMM4bDRktNQ"}
 ```
+
 </TabItem>
 
 <TabItem value="UI" label="Admin UI">

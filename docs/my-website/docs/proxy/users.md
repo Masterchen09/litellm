@@ -13,10 +13,9 @@ import TabItem from '@theme/TabItem';
 ***If a key belongs to a team, the team budget is applied, not the user's personal budget.***
 :::
 
-Requirements: 
+Requirements:
 
 - Need to a postgres database (e.g. [Supabase](https://supabase.com/), [Neon](https://neon.tech/), etc) [**See Setup**](./virtual_keys.md#setup)
-
 
 ## Set Budgets
 
@@ -62,22 +61,20 @@ curl --location 'http://0.0.0.0:4000/chat/completions' \
 ### Team
 
 You can:
+
 - Add budgets to Teams
 
 :::info
 
 **Step-by step tutorial on setting, resetting budgets on Teams here (API or using Admin UI)**
 
-> **Prerequisite:**
-> To enable team member rate limits, you must set the environment variable `EXPERIMENTAL_MULTI_INSTANCE_RATE_LIMITING=true` before starting the proxy server. Without this, team member rate limits will not be enforced.
-
 👉 [https://docs.litellm.ai/docs/proxy/team_budgets](https://docs.litellm.ai/docs/proxy/team_budgets)
 
 :::
 
-
 #### **Add budgets to teams**
-```shell 
+
+```shell
 curl --location 'http://localhost:4000/team/new' \
 --header 'Authorization: Bearer <your-master-key>' \
 --header 'Content-Type: application/json' \
@@ -133,8 +130,7 @@ curl 'http://0.0.0.0:4000/team/new' \
 
 ### Team Members
 
-Use this when you want to budget a users spend within a Team 
-
+Use this when you want to budget a users spend within a Team
 
 #### Step 1. Create User
 
@@ -173,17 +169,18 @@ curl --location 'http://0.0.0.0:4000/key/generate' \
         "team_id": "e8d1460f-846c-45d7-9b43-55f3cc52ac32"
 }'
 ```
+
 Response from `/key/generate`
 
 We use the `key` from this response in Step 4
+
 ```shell
 {"key":"sk-RV-l2BJEZ_LYNChSx2EueQ", "models":[],"spend":0.0,"max_budget":null,"user_id":"ishaan","team_id":"e8d1460f-846c-45d7-9b43-55f3cc52ac32","max_parallel_requests":null,"metadata":{},"tpm_limit":null,"rpm_limit":null,"budget_duration":null,"allowed_cache_controls":[],"soft_budget":null,"key_alias":null,"duration":null,"aliases":{},"config":{},"permissions":{},"model_max_budget":{},"key_name":null,"expires":null,"token_id":null}% 
 ```
 
 #### Step 4. Make /chat/completions requests for Team member
 
-Use the key from step 3 for this request. After 2-3 requests expect to see The following error `ExceededBudget: Crossed spend within team` 
-
+Use the key from step 3 for this request. After 2-3 requests expect to see The following error `ExceededBudget: Crossed spend within team`
 
 ```shell
 curl --location 'http://localhost:4000/chat/completions' \
@@ -200,10 +197,9 @@ curl --location 'http://localhost:4000/chat/completions' \
 }'
 ```
 
-
 ### Internal User
 
-Apply a budget across all calls an internal user (key owner) can make on the proxy. 
+Apply a budget across all calls an internal user (key owner) can make on the proxy.
 
 :::info
 
@@ -216,13 +212,15 @@ To apply a budget to a user within a team, use team member budgets.
 LiteLLM exposes a `/user/new` endpoint to create budgets for this.
 
 You can:
+
 - Add budgets to users [**Jump**](#add-budgets-to-users)
 - Add budget durations, to reset spend [**Jump**](#add-budget-duration-to-users)
 
 By default the `max_budget` is set to `null` and is not checked for keys
 
 #### **Add budgets to users**
-```shell 
+
+```shell
 curl --location 'http://localhost:4000/user/new' \
 --header 'Authorization: Bearer <your-master-key>' \
 --header 'Content-Type: application/json' \
@@ -259,9 +257,10 @@ curl 'http://0.0.0.0:4000/user/new' \
 
 #### Create new keys for existing user
 
-Now you can just call `/key/generate` with that user_id (i.e. krrish3@berri.ai) and:
-- **Budget Check**: krrish3@berri.ai's budget (i.e. $10) will be checked for this key
-- **Spend Tracking**: spend for this key will update krrish3@berri.ai's spend as well
+Now you can just call `/key/generate` with that user_id (i.e. <krrish3@berri.ai>) and:
+
+- **Budget Check**: <krrish3@berri.ai>'s budget (i.e. $10) will be checked for this key
+- **Spend Tracking**: spend for this key will update <krrish3@berri.ai>'s spend as well
 
 ```bash
 curl --location 'http://0.0.0.0:4000/key/generate' \
@@ -275,10 +274,12 @@ curl --location 'http://0.0.0.0:4000/key/generate' \
 Apply a budget on a key.
 
 You can:
+
 - Add budgets to keys [**Jump**](#add-budgets-to-keys)
 - Add budget durations, to reset spend [**Jump**](#add-budget-duration-to-keys)
 
 **Expected Behaviour**
+
 - Costs Per key get auto-populated in `LiteLLM_VerificationToken` Table
 - After the key crosses it's `max_budget`, requests fail
 - If duration set, spend is reset at the end of the duration
@@ -315,8 +316,8 @@ curl --location 'http://0.0.0.0:4000/chat/completions' \
 }'
 ```
 
-
 Expected Response from `/chat/completions` when key has crossed budget
+
 ```shell
 {
   "detail":"Authentication Error, ExceededTokenBudget: Current spend for token: 7.2e-05; Max Budget for Token: 2e-07"
@@ -338,10 +339,10 @@ curl 'http://0.0.0.0:4000/key/generate' \
 }'
 ```
 
-
 ### ✨ Virtual Key (Model Specific)
 
-Apply model specific budgets on a key. Example: 
+Apply model specific budgets on a key. Example:
+
 - Budget for `gpt-4o` is $0.0000001, for time period `1d` for `key = "sk-12345"`
 - Budget for `gpt-4o-mini` is $10, for time period `30d` for `key = "sk-12345"`
 
@@ -350,7 +351,6 @@ Apply model specific budgets on a key. Example:
 ✨ This is an Enterprise only feature [Get Started with Enterprise here](https://www.litellm.ai/#pricing)
 
 :::
-
 
 The spec for `model_max_budget` is **[`Dict[str, GenericBudgetInfo]`](#genericbudgetinfo)**
 
@@ -362,7 +362,6 @@ curl 'http://0.0.0.0:4000/key/generate' \
   "model_max_budget": {"gpt-4o": {"budget_limit": "0.0000001", "time_period": "1d"}}
 }'
 ```
-
 
 #### Make a test request
 
@@ -426,13 +425,13 @@ Expected response on failure
 </TabItem>
 </Tabs>
 
-
 ### Customers
 
 Use this to budget `user` passed to `/chat/completions`, **without needing to create a key for every user**
 
 **Step 1. Modify config.yaml**
 Define `litellm.max_end_user_budget`
+
 ```yaml
 general_settings:
   master_key: sk-1234
@@ -441,7 +440,8 @@ litellm_settings:
   max_end_user_budget: 0.0001 # budget for 'user' passed to /chat/completions
 ```
 
-2. Make a /chat/completions call, pass 'user' - First call Works 
+2. Make a /chat/completions call, pass 'user' - First call Works
+
 ```shell
 curl --location 'http://0.0.0.0:4000/chat/completions' \
         --header 'Content-Type: application/json' \
@@ -458,7 +458,8 @@ curl --location 'http://0.0.0.0:4000/chat/completions' \
         }'
 ```
 
-3. Make a /chat/completions call, pass 'user' - Call Fails, since 'ishaan3' over budget
+2. Make a /chat/completions call, pass 'user' - Call Fails, since 'ishaan3' over budget
+
 ```shell
 curl --location 'http://0.0.0.0:4000/chat/completions' \
         --header 'Content-Type: application/json' \
@@ -476,11 +477,12 @@ curl --location 'http://0.0.0.0:4000/chat/completions' \
 ```
 
 Error
+
 ```shell
 {"error":{"message":"Budget has been exceeded: User ishaan3 has exceeded their budget. Current spend: 0.0008869999999999999; Max Budget: 0.0001","type":"auth_error","param":"None","code":401}}%                
 ```
 
-## Reset Budgets 
+## Reset Budgets
 
 Reset budgets across keys/internal users/teams/customers
 
@@ -498,6 +500,7 @@ curl 'http://0.0.0.0:4000/user/new' \
   "budget_duration": "30s", # 👈 KEY CHANGE
 }'
 ```
+
 </TabItem>
 <TabItem value="keys" label="Keys">
 
@@ -523,6 +526,7 @@ curl 'http://0.0.0.0:4000/team/new' \
   "budget_duration": "30s", # 👈 KEY CHANGE
 }'
 ```
+
 </TabItem>
 </Tabs>
 
@@ -531,15 +535,17 @@ curl 'http://0.0.0.0:4000/team/new' \
 To change this, set `proxy_budget_rescheduler_min_time` and `proxy_budget_rescheduler_max_time`
 
 E.g.: Check every 1 seconds
+
 ```yaml
 general_settings: 
   proxy_budget_rescheduler_min_time: 1
   proxy_budget_rescheduler_max_time: 1
 ```
 
-## Set Rate Limits 
+## Set Rate Limits
 
-You can set: 
+You can set:
+
 - tpm limits (tokens per minute)
 - rpm limits (requests per minute)
 - max parallel requests
@@ -565,12 +571,10 @@ general_settings:
 
 This setting applies globally to all TPM rate limit checks (keys, users, teams, etc.).
 
-
 <Tabs>
 <TabItem value="per-team" label="Per Team">
 
 Use `/team/new` or `/team/update`, to persist rate limits across multiple keys for a team.
-
 
 ```shell
 curl --location 'http://0.0.0.0:4000/team/new' \
@@ -595,7 +599,6 @@ curl --location 'http://0.0.0.0:4000/team/new' \
 <TabItem value="per-user" label="Per Internal User">
 
 Use `/user/new` or `/user/update`, to persist rate limits across multiple keys for internal users.
-
 
 ```shell
 curl --location 'http://0.0.0.0:4000/user/new' \
@@ -679,7 +682,6 @@ curl -i http://localhost:4000/v1/chat/completions \
   }'
 ```
 
-
 **Expected headers**
 
 ```shell
@@ -695,7 +697,7 @@ These headers indicate:
 </TabItem>
 <TabItem value="per-end-user" label="For customers">
 
-:::info 
+:::info
 
 You can also create a budget id for a customer on the UI, under the 'Rate Limits' tab.
 
@@ -717,7 +719,6 @@ curl --location 'http://0.0.0.0:4000/budget/new' \
 }'
 ```
 
-
 #### Step 2. Create `Customer` with Budget
 
 We use `budget_id="free-tier"` from Step 1 when creating this new customers
@@ -732,10 +733,9 @@ curl --location 'http://0.0.0.0:4000/customer/new' \
 }'
 ```
 
-
 #### Step 3. Pass `user_id` id in `/chat/completions` requests
 
-Pass the `user_id` from Step 2 as `user="palantir"` 
+Pass the `user_id` from Step 2 as `user="palantir"`
 
 ```shell
 curl --location 'http://localhost:4000/chat/completions' \
@@ -753,15 +753,14 @@ curl --location 'http://localhost:4000/chat/completions' \
 }'
 ```
 
-
 </TabItem>
 </Tabs>
 
-## Set default budget for ALL internal users 
+## Set default budget for ALL internal users
 
 Use this to set a default budget for users who you give keys to.
 
-This will apply when a user has [`user_role="internal_user"`](./self_serve.md#available-roles) (set this via `/user/new` or `/user/update`). 
+This will apply when a user has [`user_role="internal_user"`](./self_serve.md#available-roles) (set this via `/user/new` or `/user/update`).
 
 This will NOT apply if a key has a team_id (team budgets will apply then). [Tell us how we can improve this!](https://github.com/BerriAI/litellm/issues)
 
@@ -779,7 +778,7 @@ litellm_settings:
   internal_user_budget_duration: "1mo" # reset every month
 ```
 
-2. Create key for user 
+2. Create key for user
 
 ```bash
 curl -L -X POST 'http://0.0.0.0:4000/key/generate' \
@@ -788,7 +787,7 @@ curl -L -X POST 'http://0.0.0.0:4000/key/generate' \
 -d '{}'
 ```
 
-Expected Response: 
+Expected Response:
 
 ```bash
 {
@@ -797,7 +796,7 @@ Expected Response:
 }
 ```
 
-3. Test it! 
+3. Test it!
 
 ```bash
 curl -L -X POST 'http://0.0.0.0:4000/chat/completions' \
@@ -809,7 +808,7 @@ curl -L -X POST 'http://0.0.0.0:4000/chat/completions' \
 }'
 ```
 
-Expected Response: 
+Expected Response:
 
 ```bash
 {
@@ -822,24 +821,9 @@ Expected Response:
 }
 ```
 
-### [BETA] Multi-instance rate limiting
+## Grant Access to new model
 
-Enable multi-instance rate limiting with the env var `EXPERIMENTAL_MULTI_INSTANCE_RATE_LIMITING="True"`
-
-**Important Notes:**
-- Setting `EXPERIMENTAL_MULTI_INSTANCE_RATE_LIMITING="True"` is required for team member rate limits to function, not just for multi-instance scenarios.
-- **Rate limits do not apply to proxy admin users.** 
-- When testing rate limits, use internal user roles (non-admin) to ensure limits are enforced as expected.
-
-Changes: 
-- This moves to using async_increment instead of async_set_cache when updating current requests/tokens. 
-- The in-memory cache is synced with redis every 0.01s, to avoid calling redis for every request. 
-- In testing, this was found to be 2x faster than the previous implementation, and reduced drift between expected and actual fails to at most 10 requests at high-traffic (100 RPS across 3 instances). 
-
-
-## Grant Access to new model 
-
-Use model access groups to give users access to select models, and add new ones to it over time (e.g. mistral, llama-2, etc.). 
+Use model access groups to give users access to select models, and add new ones to it over time (e.g. mistral, llama-2, etc.).
 
 Difference between doing this with `/key/generate` vs. `/user/new`? If you do it on `/user/new` it'll persist across multiple keys generated for that user.
 
@@ -864,9 +848,8 @@ curl --location 'http://localhost:4000/user/new' \
 -H 'Authorization: Bearer <your-master-key>' \
 -H 'Content-Type: application/json' \
 -d '{"models": ["beta-models"], # 👈 Model Access Group
-			"max_budget": 0}'
+   "max_budget": 0}'
 ```
-
 
 ## Create new keys for existing internal user
 
@@ -879,8 +862,7 @@ curl --location 'http://0.0.0.0:4000/key/generate' \
 --data '{"models": ["azure-models"], "user_id": "krrish@berri.ai"}'
 ```
 
-
-## API Specification 
+## API Specification
 
 ### `GenericBudgetInfo`
 
@@ -892,15 +874,17 @@ class GenericBudgetInfo(BaseModel):
     time_period: str    # Duration string like "1d", "30d", etc.
 ```
 
-#### Fields:
+#### Fields
+
 - `budget_limit` (float): The maximum budget amount in USD
 - `time_period` (str): Duration string specifying the time period for the budget. Supported formats:
   - Seconds: "30s"
-  - Minutes: "30m" 
+  - Minutes: "30m"
   - Hours: "30h"
   - Days: "30d"
 
-#### Example:
+#### Example
+
 ```json
 {
   "budget_limit": "0.0001",
